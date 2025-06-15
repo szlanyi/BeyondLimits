@@ -9,9 +9,11 @@ val Pink80 = Color(0xFFEFB8C8)
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
-val ButtonRed = Color(0xFFEC0E0E) // Vibrant Green
-val SecButtonOrange = Color(0xFFFB8C00) // Soft, warm orange
-val bgColor = Color(0xFFFAF3E0) // Light cream background
-val textColor = Color(0xFF141414) // Dark grey text
-val iconColor = Color(0xFFFF8A65) // Coral red-pink
-val separatorColor = Color(0xFFD0D0D0) // Neutral light
+
+
+val ButtonRed = Color(0xFFB02621)
+val BackgroundDark = Color(0xFF1E1E1E)
+val SurfaceDark = Color(0xFF2F2F2F)
+val TopBarDark = Color(0xFF121212)
+val TextWhite = Color(0xADFFFFFF)
+

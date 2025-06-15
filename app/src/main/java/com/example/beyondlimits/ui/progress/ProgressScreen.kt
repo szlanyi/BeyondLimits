@@ -11,10 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.beyondlimits.ui.slideshow.SlideshowViewModel
+import com.example.beyondlimits.ui.progress.ProgressViewModel
 
 @Composable
-fun SlideshowScreen(vm: SlideshowViewModel = viewModel()) {
+fun ProgressScreen(vm: ProgressViewModel = viewModel()) {
     val text by vm.text.collectAsState()
 
     Column(

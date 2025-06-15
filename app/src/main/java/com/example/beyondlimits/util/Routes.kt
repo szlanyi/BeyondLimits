@@ -7,18 +7,25 @@ interface Route
 @Serializable
 object Home : Route
 @Serializable
-object Gallery : Route
+object Profile : Route
+
 @Serializable
-object Slideshow : Route
+object Progress : Route
 
 @Serializable
 object Login: Route
-
-@Serializable
-object Register: Route
 
 @Serializable
 object AuthNav : Route
 
 @Serializable
 object Main:Route
+
+@Serializable
+object Running : Route
+@Serializable
+object Cycling : Route
+@Serializable
+object Swimming : Route
+@Serializable
+object Triathlon : Route

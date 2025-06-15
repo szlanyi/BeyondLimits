@@ -121,9 +121,9 @@ fun LoginScreen(
                             focusedContainerColor = Color.Black,
                             unfocusedContainerColor = Color.Black,
                             focusedIndicatorColor = ButtonRed,
-                            unfocusedIndicatorColor = ButtonRed,
+                            unfocusedIndicatorColor = Color.White,
                             focusedLabelColor = ButtonRed,
-                            unfocusedLabelColor = ButtonRed,
+                            unfocusedLabelColor = Color.White,
                             cursorColor = ButtonRed,
                             errorIndicatorColor = MaterialTheme.colorScheme.error
                         )
@@ -148,9 +148,9 @@ fun LoginScreen(
                             focusedContainerColor = Color.Black,
                             unfocusedContainerColor = Color.Black,
                             focusedIndicatorColor = ButtonRed,
-                            unfocusedIndicatorColor = ButtonRed,
+                            unfocusedIndicatorColor = Color.White,
                             focusedLabelColor = ButtonRed,
-                            unfocusedLabelColor = ButtonRed,
+                            unfocusedLabelColor = Color.White,
                             cursorColor = ButtonRed,
                             errorIndicatorColor = MaterialTheme.colorScheme.error
                         )
@@ -186,7 +186,7 @@ fun LoginScreen(
                                     .padding(end = 8.dp)
                             )
                         }
-                        Text(if (loginMode) "Login" else "Sign Up")
+                        Text(if (loginMode) "Login" else "Sign Up", color = Color.White, fontWeight = FontWeight.Bold)
                     }
 
                     TextButton(onClick = { isLoginMode = !isLoginMode }) {
@@ -195,7 +195,8 @@ fun LoginScreen(
                                 "Don't have an account? Sign Up"
                             else
                                 "Already have an account? Log in",
-                            color = ButtonRed
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }

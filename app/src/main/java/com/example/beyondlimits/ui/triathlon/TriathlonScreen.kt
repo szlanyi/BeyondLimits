@@ -1,4 +1,4 @@
-package com.example.beyondlimits.ui.gallery
+package com.example.beyondlimits.ui.triathlon
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun GalleryScreen(vm: GalleryViewModel = viewModel()) {
+fun TriathlonScreen(vm: TriathlonViewModel = viewModel()) {
     val text by vm.text.collectAsState()
 
     Box(
