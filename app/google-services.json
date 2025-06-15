@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "887234870209",
+    "project_id": "beyondlimit",
+    "storage_bucket": "beyondlimit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:887234870209:android:9160565431e4dd11190d40",
+        "android_client_info": {
+          "package_name": "com.example.beyondlimits"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAteiWKcyAgKgkWgeiHKgTg6MviiW5eEXM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
