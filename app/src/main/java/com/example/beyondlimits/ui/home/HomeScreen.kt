@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.beyondlimits.R
+import com.example.beyondlimits.ui.appNav.bounceClick
 import com.example.beyondlimits.ui.home.HomeViewModel
 import com.example.beyondlimits.ui.theme.BackgroundDark
 import com.example.beyondlimits.ui.theme.TextWhite
@@ -64,6 +65,7 @@ fun TraningButton(text: String, onButtonClick: (Route) -> Unit) {
 
     Box(
         modifier = Modifier
+            .bounceClick()
             .fillMaxWidth()
             .height(140.dp)
             .padding(end = 15.dp, bottom = 15.dp)
