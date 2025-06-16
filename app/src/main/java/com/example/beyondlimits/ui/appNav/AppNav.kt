@@ -106,12 +106,12 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
         DrawerItem("Profile", R.drawable.baseline_account_circle_24, Profile),
         DrawerItem("Progress", R.drawable.outline_trending_up_24, Progress)
     )
-
     // Observe current backstack route for drawer selection
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val startingRoute = if (currentUser == null) Profile else Home
-    NavHost(navController = navController, startDestination = Main) {
+    val startingRoute = if (currentUser == null) AuthNav else Main
+
+    NavHost(navController = navController, startDestination = startingRoute) {
         navigation<AuthNav>(startDestination = Login) {
             composable<Login> {
                 LoginScreen(
@@ -124,7 +124,7 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
                 )
             }
         }
-        navigation<Main>(startDestination = startingRoute) {
+        navigation<Main>(startDestination = Home) {
 
             composable<Home> {
                 HomeScreen(
