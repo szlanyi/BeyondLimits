@@ -1,22 +1,16 @@
 package com.example.beyondlimits.ui.running
 
-import android.renderscript.RenderScript.Priority
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import com.google.android.gms.maps.GoogleMap
-import com.google.type.LatLng
 
 @Composable
 fun RunningScreen(vm: RunningViewModel) {
@@ -44,16 +38,13 @@ fun RunningScreen(vm: RunningViewModel) {
 @Composable
 fun TodayTrainingView(vm: RunningViewModel) {
     Column {
-        Text("Hallo2 ")
+        Text("actual")
     }
 }
 
 @Composable
 fun PastResultsView(vm: RunningViewModel) {
-    val context = LocalContext.current
-
-    var googleMap by remember { mutableStateOf<GoogleMap?>(null) }
     Column {
-        Text("hallo")
+        Text("results")
     }
 }

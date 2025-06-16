@@ -65,6 +65,7 @@ import com.example.beyondlimits.util.Login
 import com.example.beyondlimits.util.Progress
 import kotlinx.coroutines.launch
 import androidx.navigation.compose.navigation
+import com.example.beyondlimits.data.repository.Repository.currentUser
 import com.example.beyondlimits.ui.auth.AuthViewModel
 import com.example.beyondlimits.ui.cycling.CyclingScreen
 import com.example.beyondlimits.ui.running.RunningScreen
@@ -98,7 +99,7 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
     // Observe current backstack route for drawer selection
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
+    val startingRoute = if (currentUser == null) Profile else Home
     NavHost(navController = navController, startDestination = Main) {
         navigation<AuthNav>(startDestination = Login) {
             composable<Login> {
@@ -106,18 +107,20 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
                     viewModel = viewModel(),
                     onAuthSuccess = {
                         navController.navigate(Main) {
-                        popUpTo(AuthNav) { inclusive = true } // removes login from backstack
-                    }}
+                            popUpTo(AuthNav) { inclusive = true } // removes login from backstack
+                        }
+                    }
                 )
             }
         }
-        navigation<Main>(startDestination = Home) {
-            composable<Home> { HomeScreen(
-                vm = viewModel(),
-                chosedTraning = { route -> navController.navigate(route) }
-            ) }
-            composable<Profile> { ProfileScreen(vm = viewModel()) }
-            composable<Progress> { ProgressScreen(vm = viewModel()) }
+        navigation<Main>(startDestination = startingRoute) {
+
+            composable<Home> {
+                HomeScreen(
+                    vm = viewModel(),
+                    chosedTraning = { route -> navController.navigate(route) }
+                )
+            }
         }
     }
     val navController2 = rememberNavController()
@@ -125,9 +128,11 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
     if (currentRoute in drawerItems.map { it.route::class.qualifiedName }) {
         ModalNavigationDrawer(
             drawerState = drawerState,
+            gesturesEnabled = true,
+
             drawerContent = {
                 ModalDrawerSheet(
-                    drawerContainerColor = SurfaceDark // Use your barColor as drawer background
+                    drawerContainerColor = SurfaceDark
                 ) {
                     Column(
                         modifier = Modifier
@@ -135,7 +140,6 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
                             .background(SurfaceDark)
                             .padding(16.dp)
                     ) {
-                        // Header Section
                         Box(
                             modifier = Modifier
                                 .height(200.dp)
@@ -152,21 +156,24 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
                                     modifier = Modifier
                                         .size(80.dp)
                                         .clip(CircleShape)
-                                        .background(Color.Gray), // Placeholder background
+                                        .background(Color.Gray),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text("R", color = TextWhite, fontSize = 32.sp, fontWeight = FontWeight.Bold)
-                                    // Replace with Image() when actual profile image is available
+                                    Text(
+                                        "R",
+                                        color = TextWhite,
+                                        fontSize = 32.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
 
                                 Spacer(modifier = Modifier.width(16.dp))
 
-                                // User info
                                 Column {
                                     Text(text = "Robert", color = TextWhite, fontSize = 18.sp)
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = "Email: john.mclean@example.com",
+                                        text = "john.mclean@example.com",
                                         color = TextWhite,
                                         fontSize = 14.sp
                                     )
@@ -177,7 +184,6 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
 
                         Spacer(Modifier.height(24.dp))
 
-                        // Drawer Items
                         drawerItems.forEach { item ->
                             NavigationDrawerItem(
                                 label = { Text(item.label, color = TextWhite) },
@@ -205,10 +211,8 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
                             )
                         }
 
-                        // Spacer to push Logout button to bottom
                         Spacer(modifier = Modifier.weight(1f))
 
-                        // Logout Button
                         Button(
                             onClick = {
                                 vm.logout()
@@ -222,30 +226,31 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
                                 .padding(top = 16.dp),
                             shape = RoundedCornerShape(8.dp)
                         ) {
-                            Text("Logout", color = TextWhite)
+                            Text("Logout", color = TextWhite, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
 
             }
         ) {
+            val navBackStackEntry2 by navController2.currentBackStackEntryAsState()
+            val currentRoute2 = navBackStackEntry2?.destination?.route
+
             Scaffold(
                 topBar = {
                     TopAppBar(
-
                         navigationIcon = {
+                            if (currentRoute2 != "com.example.beyondlimits.util.Home") {
                                 IconButton(onClick = {
                                     navController2.popBackStack()
-                                    print(currentRoute)
                                 }) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = "Back",
                                         tint = TextWhite
                                     )
-
+                                }
                             }
-
                         },
                         title = {
 
@@ -271,7 +276,11 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
                         },
                         actions = {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(Icons.Default.Menu, contentDescription = "Open Drawer", tint = TextWhite)
+                                Icon(
+                                    Icons.Default.Menu,
+                                    contentDescription = "Open Drawer",
+                                    tint = TextWhite
+                                )
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
@@ -286,7 +295,11 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
                     startDestination = Home,
                     modifier = Modifier.padding(innerPadding)
                 ) {
-                    composable<Home> { HomeScreen(vm = viewModel(), chosedTraning = {route-> navController2.navigate(route)}) }
+                    composable<Home> {
+                        HomeScreen(
+                            vm = viewModel(),
+                            chosedTraning = { route -> navController2.navigate(route) })
+                    }
                     composable<Profile> { ProfileScreen(vm = viewModel()) }
                     composable<Progress> { ProgressScreen(vm = viewModel()) }
                     composable<Running> { RunningScreen(vm = viewModel()) }
