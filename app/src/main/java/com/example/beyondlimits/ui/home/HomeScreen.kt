@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.beyondlimits.R
-import com.example.beyondlimits.ui.appNav.bounceClick
 import com.example.beyondlimits.ui.home.HomeViewModel
 import com.example.beyondlimits.ui.theme.BackgroundDark
 import com.example.beyondlimits.ui.theme.TextWhite
@@ -33,6 +31,8 @@ import com.example.beyondlimits.util.Route
 import com.example.beyondlimits.util.Running
 import com.example.beyondlimits.util.Swimming
 import com.example.beyondlimits.util.Triathlon
+import com.example.beyondlimits.util.bounceClick
+import com.example.beyondlimits.util.shakeClickEffect
 
 
 @Composable
@@ -51,7 +51,7 @@ fun HomeScreen(vm: HomeViewModel = viewModel(), chosedTraning: (Route) -> Unit) 
             color = TextWhite
         )
 
-        Spacer(modifier = Modifier.height(130.dp))
+        Spacer(modifier = Modifier.height(80.dp))
 
         val trainings = listOf("Running", "Cycling", "Swimming", "Triathlon")
         trainings.forEach { training ->
@@ -65,7 +65,7 @@ fun TraningButton(text: String, onButtonClick: (Route) -> Unit) {
 
     Box(
         modifier = Modifier
-            .bounceClick()
+            .shakeClickEffect()
             .fillMaxWidth()
             .height(140.dp)
             .padding(end = 15.dp, bottom = 15.dp)
@@ -99,7 +99,7 @@ fun TraningButton(text: String, onButtonClick: (Route) -> Unit) {
         Row(
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .padding(start = 16.dp),
+                .padding(start = 30.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(

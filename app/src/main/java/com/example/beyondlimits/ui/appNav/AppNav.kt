@@ -139,8 +139,7 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
     if (currentRoute in drawerItems.map { it.route::class.qualifiedName }) {
         ModalNavigationDrawer(
             drawerState = drawerState,
-            gesturesEnabled = true,
-
+            gesturesEnabled = drawerState.isOpen,
             drawerContent = {
                 ModalDrawerSheet(
                     drawerContainerColor = SurfaceDark
@@ -264,7 +263,6 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
                             }
                         },
                         title = {
-
                             Row(
                                 Modifier
                                     .fillMaxWidth()
@@ -323,33 +321,7 @@ fun AppNav(vm: AuthViewModel = viewModel()) {
     }
 }
 
-enum class ButtonState { Pressed, Idle }
-fun Modifier.bounceClick() = composed {
-    var buttonState by remember { mutableStateOf(ButtonState.Idle) }
-    val scale by animateFloatAsState(if (buttonState == ButtonState.Pressed) 0.90f else 1f)
 
-    this
-        .graphicsLayer {
-            scaleX = scale
-            scaleY = scale
-        }
-        .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-            onClick = {  }
-        )
-        .pointerInput(buttonState) {
-            awaitPointerEventScope {
-                buttonState = if (buttonState == ButtonState.Pressed) {
-                    waitForUpOrCancellation()
-                    ButtonState.Idle
-                } else {
-                    awaitFirstDown(false)
-                    ButtonState.Pressed
-                }
-            }
-        }
-}
 
 
 
