@@ -95,6 +95,7 @@ dependencies {
 
     // Coil – képekhez
     implementation(libs.coil.compose)
+    implementation("com.google.maps.android:maps-compose:6.4.1")
 
     implementation("com.google.accompanist:accompanist-drawablepainter:0.35.0-alpha")
 
