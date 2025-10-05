@@ -4,6 +4,7 @@ import com.example.beyondlimits.data.remote.api.AuthApi
 import com.example.beyondlimits.data.remote.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -11,12 +12,37 @@ import kotlinx.coroutines.tasks.await
 
 class AuthDataSource : AuthApi {
     private val firebaseAuth = FirebaseAuth.getInstance()
+    private val firestore = FirebaseFirestore.getInstance()
 
-    override suspend fun register(email: String, password: String): Result<User> {
+    override suspend fun register(
+        email: String,
+        password: String,
+        displayName: String?
+    ): Result<User> {
         return try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            val user = result.user?.toUser()
-            if (user != null) Result.success(user) else Result.failure(Exception("User creation failed"))
+            val firebaseUser = result.user ?: return Result.failure(Exception("User creation failed"))
+
+            val user = firebaseUser.toUser()
+
+            // ✅ Benutzer-Dokument in Firestore anlegen
+            val userDoc = hashMapOf(
+                "uid" to user.uid,
+                "email" to user.email,
+                "displayName" to (user.displayName ?: "New Athlete"),
+                "createdAt" to com.google.firebase.Timestamp.now(),
+                "preferences" to mapOf(
+                    "unitSystem" to "metric",
+                    "profileImage" to "default"
+                )
+            )
+
+            firestore.collection("users")
+                .document(user.uid)
+                .set(userDoc)
+                .await()
+
+            Result.success(user)
         } catch (e: Exception) {
             Result.failure(e)
         }

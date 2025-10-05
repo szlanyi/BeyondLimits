@@ -19,12 +19,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.beyondlimits.feature_progress.ProgressViewModel
 import com.example.beyondlimits.ui.theme.BackgroundDark
 import kotlinx.coroutines.delay
 
 @Composable
 fun ProgressScreen(vm: ProgressViewModel = viewModel()) {
-    val text by vm.text.collectAsState()
 
     val sports = listOf("Running", "Cycling", "Swimming", "Triathlon")
     val timeframes = listOf("Week", "Month", "Year")
@@ -105,12 +105,6 @@ fun ProgressScreen(vm: ProgressViewModel = viewModel()) {
             StatsGrid(selectedSport, selectedTimeframe, color)
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = text,
-                color = Color.White.copy(alpha = 0.7f),
-                style = MaterialTheme.typography.bodyLarge
-            )
         }
     }
 }

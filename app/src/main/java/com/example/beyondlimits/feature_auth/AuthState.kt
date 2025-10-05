@@ -1,4 +1,4 @@
-package com.example.beyondlimits.ui.auth
+package com.example.beyondlimits.feature_auth
 
 data class AuthState(
     val isLoading: Boolean = false,

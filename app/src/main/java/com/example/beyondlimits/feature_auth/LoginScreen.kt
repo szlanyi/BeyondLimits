@@ -8,36 +8,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,13 +43,17 @@ fun LoginScreen(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var displayName by remember { mutableStateOf("") }
+
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
 
+    // ✅ Erfolgreich eingeloggt → weiter navigieren
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) onAuthSuccess()
     }
 
+    // ❌ Fehlermeldungen anzeigen
     LaunchedEffect(state.errorMessage) {
         state.errorMessage?.let {
             scope.launch { snackbarHostState.showSnackbar(it) }
@@ -94,12 +74,11 @@ fun LoginScreen(
             Image(
                 painter = painterResource(id = R.drawable.bg_img2),
                 contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize() ,
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
 
-            // 🔹 Dunkles Overlay für Lesbarkeit
+            // 🔹 Gradient Overlay
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -132,7 +111,7 @@ fun LoginScreen(
                         .padding(bottom = 24.dp)
                 )
 
-                // Übergang Login/Signup
+                // Titel / Animation Login <-> Register
                 AnimatedContent(
                     targetState = isLoginMode,
                     label = "AuthModeTransition",
@@ -157,6 +136,20 @@ fun LoginScreen(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
+                        // ✅ Name-Feld nur bei Registrierung
+                        if (!loginMode) {
+                            OutlinedTextField(
+                                value = displayName,
+                                onValueChange = { displayName = it },
+                                label = { Text("Display Name") },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = textFieldColors()
+                            )
+                            Spacer(modifier = Modifier.height(14.dp))
+                        }
+
                         // Email
                         OutlinedTextField(
                             value = email,
@@ -169,17 +162,7 @@ fun LoginScreen(
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                             modifier = Modifier.fillMaxWidth(),
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color(0xFFDDDDDD),
-                                focusedContainerColor = Color.White.copy(alpha = 0.05f),
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.03f),
-                                focusedIndicatorColor = ButtonRed,
-                                unfocusedIndicatorColor = Color.White.copy(alpha = 0.2f),
-                                cursorColor = ButtonRed,
-                                focusedLabelColor = ButtonRed,
-                                unfocusedLabelColor = Color(0xFFAAAAAA)
-                            )
+                            colors = textFieldColors()
                         )
 
                         if (emailError) {
@@ -208,17 +191,7 @@ fun LoginScreen(
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                             modifier = Modifier.fillMaxWidth(),
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color(0xFFDDDDDD),
-                                focusedContainerColor = Color.White.copy(alpha = 0.05f),
-                                unfocusedContainerColor = Color.White.copy(alpha = 0.03f),
-                                focusedIndicatorColor = ButtonRed,
-                                unfocusedIndicatorColor = Color.White.copy(alpha = 0.2f),
-                                cursorColor = ButtonRed,
-                                focusedLabelColor = ButtonRed,
-                                unfocusedLabelColor = Color(0xFFAAAAAA)
-                            )
+                            colors = textFieldColors()
                         )
 
                         if (passwordError) {
@@ -234,17 +207,21 @@ fun LoginScreen(
 
                         Spacer(modifier = Modifier.height(28.dp))
 
-                        // Login/Signup Button
+                        // Login / Signup Button
                         Button(
                             onClick = {
                                 emailError = email.isBlank()
                                 passwordError = password.isBlank()
+
                                 if (!emailError && !passwordError) {
-                                    if (loginMode) viewModel.login(email, password)
-                                    else viewModel.register(email, password)
+                                    if (loginMode) {
+                                        viewModel.login(email, password)
+                                    } else {
+                                        viewModel.register(email, password, displayName)
+                                    }
                                 } else {
                                     scope.launch {
-                                        snackbarHostState.showSnackbar("Please fill in all the fields")
+                                        snackbarHostState.showSnackbar("Please fill in all fields")
                                     }
                                 }
                             },
@@ -290,3 +267,17 @@ fun LoginScreen(
         }
     }
 }
+
+// 🔧 Helper – vereinheitlicht TextField-Styling
+@Composable
+private fun textFieldColors() = TextFieldDefaults.colors(
+    focusedTextColor = Color.White,
+    unfocusedTextColor = Color(0xFFDDDDDD),
+    focusedContainerColor = Color.White.copy(alpha = 0.05f),
+    unfocusedContainerColor = Color.White.copy(alpha = 0.03f),
+    focusedIndicatorColor = ButtonRed,
+    unfocusedIndicatorColor = Color.White.copy(alpha = 0.2f),
+    cursorColor = ButtonRed,
+    focusedLabelColor = ButtonRed,
+    unfocusedLabelColor = Color(0xFFAAAAAA)
+)

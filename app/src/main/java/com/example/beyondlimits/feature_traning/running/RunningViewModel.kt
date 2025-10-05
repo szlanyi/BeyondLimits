@@ -4,7 +4,10 @@ import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.beyondlimits.data.remote.model.*
+import com.example.beyondlimits.data.repository.Repository
 import com.example.beyondlimits.feature_location.LocationTracker
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -14,7 +17,7 @@ import kotlin.math.*
 
 class RunningViewModel(application: Application) : AndroidViewModel(application) {
 
-    // UI-States
+    // ---- States ----
     var isRunning = mutableStateOf(false)
         private set
     var distanceKm = mutableStateOf(0.0)
@@ -28,11 +31,11 @@ class RunningViewModel(application: Application) : AndroidViewModel(application)
     private var timerJob: Job? = null
     private var lastLocation: LatLng? = null
 
-    // Liste der GPS-Punkte (Route)
-    val routePoints = mutableListOf<LatLng>()
+    // Routepunkte
+    private val routePoints = mutableListOf<RoutePoint>()
 
     init {
-        // ✅ Echtzeit-Position überwachen
+        // 🛰️ Echtzeit-GPS
         viewModelScope.launch {
             tracker.getLocationUpdates().collectLatest { location ->
                 if (isRunning.value) {
@@ -50,29 +53,69 @@ class RunningViewModel(application: Application) : AndroidViewModel(application)
 
     fun startRun() {
         isRunning.value = true
-        lastLocation = null
-        routePoints.clear()
-        timeSec.value = 0
         distanceKm.value = 0.0
+        timeSec.value = 0
         pace.value = "–"
+        routePoints.clear()
+        lastLocation = null
 
         timerJob = viewModelScope.launch {
             while (isRunning.value) {
                 delay(1000)
-                timeSec.value += 1
+                timeSec.value++
                 updatePace()
             }
         }
     }
 
     fun stopRun() {
+        if (!isRunning.value) return
         isRunning.value = false
         timerJob?.cancel()
-        lastLocation = null
+
+        // 📦 Session speichern
+        viewModelScope.launch {
+            try {
+                val session = Session(
+                    id = "",
+                    date = Timestamp.now(),
+                    duration = timeSec.value,
+                    totalDistance = distanceKm.value,
+                    weather = Weather("sunny"),
+                    deviceInfo = DeviceInfo(
+                        deviceModel = android.os.Build.MODEL,
+                        osVersion = "Android ${android.os.Build.VERSION.RELEASE}"
+                    ),
+                    segments = listOf(
+                        Segment(
+                            distance = distanceKm.value,
+                            duration = timeSec.value,
+                            metrics = Metrics(
+                                avgPace = calculateAvgPace(),
+                                hearthRate = (120..160).random() // Fake HR bis Sensor kommt ;)
+                            ),
+                            route = routePoints
+                        )
+                    ),
+                    tags = listOf("run", "training"),
+                    temperature = 21,
+                    windSpeed = 10
+                )
+
+                val result = Repository.addSession(session)
+                if (result.isSuccess) {
+                    resetAfterSave()
+                } else {
+                    println("❌ Fehler beim Speichern: ${result.exceptionOrNull()?.message}")
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
-    fun reset() {
-        stopRun()
+    private fun resetAfterSave() {
         distanceKm.value = 0.0
         timeSec.value = 0
         pace.value = "–"
@@ -87,9 +130,15 @@ class RunningViewModel(application: Application) : AndroidViewModel(application)
                 prev.latitude, prev.longitude,
                 newLocation.latitude, newLocation.longitude
             )
-            if (dist > 0.003) { // filter rauschen < 3m
+            if (dist > 0.003) { // Filter für GPS-Rauschen
                 distanceKm.value += dist
-                routePoints.add(newLocation)
+                routePoints.add(
+                    RoutePoint(
+                        lat = newLocation.latitude,
+                        lng = newLocation.longitude,
+                        type = "RUN"
+                    )
+                )
                 updatePace()
             }
         }
@@ -105,9 +154,14 @@ class RunningViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    // ---------------- DISTANZFORMEL ----------------
+    private fun calculateAvgPace(): Double {
+        val distance = distanceKm.value
+        val time = timeSec.value
+        return if (distance > 0) (time / 60.0) / distance else 0.0
+    }
+
     private fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val R = 6371.0 // Erdradius in km
+        val R = 6371.0
         val dLat = Math.toRadians(lat2 - lat1)
         val dLon = Math.toRadians(lon2 - lon1)
         val a = sin(dLat / 2).pow(2.0) +

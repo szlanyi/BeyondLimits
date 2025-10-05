@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.beyondlimits.data.remote.model.User
 import com.example.beyondlimits.data.repository.Repository
-import com.example.beyondlimits.ui.auth.AuthState
-
 import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
@@ -18,10 +16,10 @@ class AuthViewModel : ViewModel() {
     var currentUser by mutableStateOf<User?>(Repository.currentUser)
         private set
 
-    fun register(email: String, password: String) {
+    fun register(email: String, password: String, displayName: String? = "") {
         state = state.copy(isLoading = true, errorMessage = null)
         viewModelScope.launch {
-            val result = Repository.register(email, password)
+            val result = Repository.register(email, password, displayName)
             state = if (result.isSuccess) {
                 currentUser = result.getOrNull()
                 AuthState(isSuccess = true)
