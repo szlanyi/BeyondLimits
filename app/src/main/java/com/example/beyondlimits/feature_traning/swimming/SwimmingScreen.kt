@@ -1,4 +1,4 @@
-package com.example.beyondlimits.ui.swimming
+package com.example.beyondlimits.feature_traning.swimming
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.beyondlimits.ui.swimming.SwimmingViewModel
 
 @Composable
 fun SwimmingScreen(vm: SwimmingViewModel = viewModel()) {

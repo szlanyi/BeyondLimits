@@ -1,4 +1,4 @@
-package com.example.beyondlimits.ui.auth
+package com.example.beyondlimits.feature_auth
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.beyondlimits.data.remote.model.User
 import com.example.beyondlimits.data.repository.Repository
+import com.example.beyondlimits.ui.auth.AuthState
 
 import kotlinx.coroutines.launch
 

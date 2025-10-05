@@ -67,12 +67,6 @@ dependencies {
     //Jetpack Compose BOM
     implementation(platform(libs.androidx.compose.bom))
 
-    // Jetpack Compose Core komponensek
-//    implementation(libs.androidx.ui)
-//    implementation(libs.androidx.ui.graphics)
-//    implementation(libs.androidx.ui.tooling.preview)
-//    implementation(libs.androidx.material3)
-
     // Navigation (Compose)
     implementation(libs.androidx.navigation.compose)
     implementation("androidx.compose.runtime:runtime:1.8.2") // Example: Replace with correct version
@@ -87,16 +81,17 @@ dependencies {
     // Kotlinx Serialization
     implementation(libs.kotlinx.serialization.json)
 
-    // Exposed (lokális SQLite DB)
     implementation(libs.sqlite.jdbc)
-
-    // Splash screen
-    implementation("androidx.core:core-splashscreen:1.0.0")
 
     // Coil – képekhez
     implementation(libs.coil.compose)
-    implementation("com.google.maps.android:maps-compose:6.4.1")
-
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("com.google.accompanist:accompanist-permissions:0.35.2-beta")
     implementation("com.google.accompanist:accompanist-drawablepainter:0.35.0-alpha")
+    //Maplibre
+    implementation("org.maplibre.gl:android-sdk:11.13.5")
+    implementation("com.google.maps.android:maps-compose:6.4.1")
+    implementation("org.maplibre.gl:android-plugin-annotation-v9:1.0.0")
 
 }

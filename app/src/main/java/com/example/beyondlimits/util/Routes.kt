@@ -29,3 +29,6 @@ object Cycling : Route
 object Swimming : Route
 @Serializable
 object Triathlon : Route
+
+@Serializable
+object Splash : Route

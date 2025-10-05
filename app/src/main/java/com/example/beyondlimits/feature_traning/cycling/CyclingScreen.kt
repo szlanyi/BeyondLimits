@@ -1,4 +1,4 @@
-package com.example.beyondlimits.ui.cycling
+package com.example.beyondlimits.feature_traning.cycling
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.beyondlimits.ui.cycling.CyclingViewModel
 
 @Composable
 fun CyclingScreen(vm: CyclingViewModel = viewModel()) {

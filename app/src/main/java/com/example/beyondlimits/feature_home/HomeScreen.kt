@@ -1,21 +1,32 @@
+package com.example.beyondlimits.feature_home
+
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,91 +34,168 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.beyondlimits.R
-import com.example.beyondlimits.ui.home.HomeViewModel
+import com.example.beyondlimits.ui.components.TotalStatsFooter
+import com.example.beyondlimits.ui.components.WeeklyProgressCard
 import com.example.beyondlimits.ui.theme.BackgroundDark
-import com.example.beyondlimits.ui.theme.TextWhite
 import com.example.beyondlimits.util.Cycling
 import com.example.beyondlimits.util.Route
 import com.example.beyondlimits.util.Running
 import com.example.beyondlimits.util.Swimming
 import com.example.beyondlimits.util.Triathlon
-import com.example.beyondlimits.util.bounceClick
-import com.example.beyondlimits.util.shakeClickEffect
-
 
 @Composable
-fun HomeScreen(vm: HomeViewModel = viewModel(), chosedTraning: (Route) -> Unit) {
+fun HomeScreen(
+    vm: HomeViewModel = viewModel(),
+    chosenTraining: (Route) -> Unit
+) {
     Column(
         modifier = Modifier
-            .fillMaxSize().background(BackgroundDark),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF121212), // etwas dunkler oben
+                        BackgroundDark,    // dein Farbton in der Mitte
+                        Color(0xFF2A2A2A)  // leicht heller unten
+                    )
+                )
+            )
+            .padding(horizontal = 20.dp, vertical = 30.dp),
+        verticalArrangement = Arrangement.Top
     ) {
         Text(
-            "Train Hard! Go Beyond!",
-            fontSize = 35.sp,
-            fontWeight = FontWeight.Bold,
-            maxLines = 1,
-            color = TextWhite
+            text = "Welcome back, Athlete!",
+            color = Color.White.copy(alpha = 0.7f),
+            fontSize = 16.sp
         )
 
-        Spacer(modifier = Modifier.height(80.dp))
+        Text(
+            text = "Push Beyond Your Limits",
+            color = Color.White,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 28.sp,
+            letterSpacing = 0.5.sp
+        )
 
-        val trainings = listOf("Running", "Cycling", "Swimming", "Triathlon")
-        trainings.forEach { training ->
-            TraningButton(text = training, onButtonClick = { route -> chosedTraning(route) })
+
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        WeeklyProgressCard()
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Text(
+            "Choose your training",
+            color = Color.White.copy(alpha = 0.7f),
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        TrainingOptionGrid(onTrainingSelected = chosenTraining)
+        Spacer(modifier = Modifier.height(32.dp))
+        TotalStatsFooter()
+    }
+}
+
+@Composable
+fun TrainingOptionGrid(onTrainingSelected: (Route) -> Unit) {
+    val items = listOf(
+        TrainingItem("Running", R.drawable.running, Color(0xFF43A047), Running),
+        TrainingItem("Cycling", R.drawable.tricycling, Color(0xFFFB8C00), Cycling),
+        TrainingItem("Swimming", R.drawable.swimming, Color(0xFF039BE5), Swimming),
+        TrainingItem("Triathlon", R.drawable.triathlon, Color(0xFF9C27B0), Triathlon)
+    )
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        for (row in items.chunked(2)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                row.forEach { item ->
+                    TrainingCard(
+                        item = item,
+                        onTrainingSelected = onTrainingSelected,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                if (row.size == 1) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
         }
     }
 }
 
 @Composable
-fun TraningButton(text: String, onButtonClick: (Route) -> Unit) {
+fun TrainingCard(
+    item: TrainingItem,
+    onTrainingSelected: (Route) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val scale = remember { Animatable(1f) }
 
     Box(
-        modifier = Modifier
-            .shakeClickEffect()
-            .fillMaxWidth()
-            .height(140.dp)
-            .padding(end = 15.dp, bottom = 15.dp)
-            .clip(CutCornerShape(bottomEnd = 140.dp))
-            .clickable(enabled = true, onClick = {
-                val route = when (text) {
-                    "Running" -> Running
-                    "Cycling" -> Cycling
-                    "Swimming" -> Swimming
-                    "Triathlon" -> Triathlon
-                    else -> Running
-                }
-                onButtonClick(route)
-            })
+        modifier = modifier
+            .graphicsLayer(scaleX = scale.value, scaleY = scale.value)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        scale.animateTo(0.96f)
+                        tryAwaitRelease()
+                        scale.animateTo(1f)
+                        onTrainingSelected(item.route)
+                    }
+                )
+            }
+            .aspectRatio(1.4f)
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onTrainingSelected(item.route) }
+            .shadow(8.dp, RoundedCornerShape(16.dp)),
+        contentAlignment = Alignment.Center
     ) {
-        val image = when (text) {
-            "Running" -> R.drawable.running
-            "Cycling" -> R.drawable.tricycling
-            "Swimming" -> R.drawable.swimming
-            "Triathlon" -> R.drawable.triathlon
-            else -> R.drawable.running
-        }
+        // Hintergrundbild
         Image(
-            painter = painterResource(image),
-            contentDescription = null,
+            painter = painterResource(id = item.iconRes),
+            contentDescription = item.title,
             contentScale = ContentScale.Crop,
-            alpha = 0.7f,
             modifier = Modifier.matchParentSize()
         )
 
-        Row(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 30.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = text,
-                color = TextWhite,
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        // Verlauf-Overlay
+        Box(
+            Modifier
+                .matchParentSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f))
+                    )
+                )
+        )
+
+        // Text oben drauf
+        Text(
+            text = item.title,
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            modifier = Modifier.align(Alignment.BottomStart).padding(16.dp)
+        )
     }
 }
+
+
+
+data class TrainingItem(
+    val title: String,
+    val iconRes: Int,
+    val color: Color,
+    val route: Route
+)
+
+
